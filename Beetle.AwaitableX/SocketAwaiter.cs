@@ -51,6 +51,7 @@ namespace Beetle.AwaitableX
         public void SetBuffer(byte[] buffer, int offset, int count)
         {
             Buffer.BlockCopy(buffer, offset, mBuffer, 0, count);
+            mSAEA.SetBuffer(0, count);
         }
 
         public SocketAwaiter Send(System.Net.Sockets.Socket socket)
