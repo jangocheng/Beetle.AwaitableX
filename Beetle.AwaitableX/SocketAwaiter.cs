@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Beetle.AwaitableX
 {
-    public class SocketAwaiter : Awaiter<ArraySegment<byte>>
+    public class SocketAwaiter : Awaiter<ArraySegment<byte>, SocketAwaiter>
     {
 
         private System.Net.Sockets.SocketAsyncEventArgs mSAEA;
@@ -41,10 +41,13 @@ namespace Beetle.AwaitableX
             Completed(new ArraySegment<byte>(mBuffer, e.Offset, e.BytesTransferred), null);
         }
 
+        public int BytesTransferred { get { return this.mSAEA.BytesTransferred; } }
+
+        public SocketAsyncOperation LastOperation { get { return this.mSAEA.LastOperation; } }
+
         public override void Reset()
         {
             base.Reset();
-            mSAEA.SetBuffer(0, mBuffer.Length);
             SocketError = System.Net.Sockets.SocketError.Success;
         }
 
@@ -70,6 +73,7 @@ namespace Beetle.AwaitableX
 
         public SocketAwaiter Receive(System.Net.Sockets.Socket socket)
         {
+            mSAEA.SetBuffer(0, mBuffer.Length);
             if (!socket.ReceiveAsync(mSAEA))
             {
                 OnSocketCompleted(this, mSAEA);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Beetle.AwaitableX
 {
-    public class Awaiter<T> : INotifyCompletion
+    public abstract class Awaiter<T, TARGET> : INotifyCompletion, IAwaitResult<TARGET> where TARGET : INotifyCompletion
     {
         private object mResult;
 
@@ -59,6 +59,10 @@ namespace Beetle.AwaitableX
             {
                 this.Exception = e_;
             }
+            finally
+            {
+                Reset();
+            }
 
         }
 
@@ -71,10 +75,10 @@ namespace Beetle.AwaitableX
                 OnExecute(useThread);
         }
 
-        public virtual void Reset()
+        protected virtual void Reset()
         {
             IsCompleted = false;
-            mResult = default(T);
+            mResult = null;
             mContinuation = null;
             Exception = null;
             mExecuteComplted = 0;
@@ -100,7 +104,7 @@ namespace Beetle.AwaitableX
             }
         }
 
-        public Awaiter<T> GetAwaiter()
+        public Awaiter<T, TARGET> GetAwaiter()
         {
             return this;
         }
@@ -115,13 +119,26 @@ namespace Beetle.AwaitableX
             }
         }
 
-        public TRESULT GetResult<TRESULT>()
+        public IAwaitResult<TARGET> GetResult()
         {
-            if (this.Exception != null)
-                throw this.Exception;
-            return (TRESULT)mResult;
+            return this;
         }
 
         public object Tag { get; set; }
+
+        public RESULT ResultTo<RESULT>()
+        {
+            if (this.Exception != null)
+                throw this.Exception;
+            return (RESULT)mResult;
+        }
+
+        public TARGET Target
+        {
+            get
+            {
+                return (TARGET)(object)this;
+            }
+        }
     }
 }
