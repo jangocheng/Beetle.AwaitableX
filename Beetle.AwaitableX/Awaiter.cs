@@ -62,7 +62,7 @@ namespace Beetle.AwaitableX
 
         }
 
-        public void Completed(object result, Exception exception, bool useThread = false)
+        public virtual void Completed(object result, Exception exception, bool useThread = false)
         {
             mResult = (T)result;
             this.Exception = exception;
@@ -71,7 +71,7 @@ namespace Beetle.AwaitableX
                 OnExecute(useThread);
         }
 
-        public void Reset()
+        public virtual void Reset()
         {
             IsCompleted = false;
             mResult = default(T);
