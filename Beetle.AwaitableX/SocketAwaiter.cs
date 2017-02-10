@@ -18,6 +18,7 @@ namespace Beetle.AwaitableX
         {
             mSAEA = new System.Net.Sockets.SocketAsyncEventArgs();
             mBuffer = new byte[bufferSize];
+            mSAEA.SetBuffer(mBuffer, 0, bufferSize);
             mSAEA.Completed += OnSocketCompleted;
         }
 
@@ -45,7 +46,7 @@ namespace Beetle.AwaitableX
 
         public SocketAsyncOperation LastOperation { get { return this.mSAEA.LastOperation; } }
 
-        public override void Reset()
+        protected override void Reset()
         {
             base.Reset();
             SocketError = System.Net.Sockets.SocketError.Success;
